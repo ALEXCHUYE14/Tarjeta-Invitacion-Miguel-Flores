@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#090d16" />
+  <title>Miguel_Flores_v31.0 // Event Invitation</title>
+  <meta name="description" content="Invitación de cumpleaños — Miguel Flores v31.0. System Architecture Edition." />
+
+  <!-- Preconnect + Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ================= BACKGROUND PHOTO (fija, detrás de todo) ================= -->
+  <div class="bg-photo" aria-hidden="true"></div>
+
+  <!-- ================= AUDIO ENGINE ================= -->
+  <audio id="event-audio" preload="auto" loop>
+    <source src="Public/audio/Pitbull%20-%20Hotel%20Room%20Service.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- ================= STATE 1 :: SPLASH / TERMINAL BOOT ================= -->
+  <section id="splash" class="splash" aria-label="Secuencia de arranque del sistema">
+    <div class="scanlines" aria-hidden="true"></div>
+    <article class="boot-card glass">
+      <header class="boot-card__head">
+        <span class="dot dot--red"></span>
+        <span class="dot dot--amber"></span>
+        <span class="dot dot--green"></span>
+        <span class="boot-card__title">miguel_flores — bash — 80&times;24</span>
+      </header>
+
+      <div class="boot-terminal" id="boot-terminal" aria-live="polite">
+        <!-- lines injected by script.js -->
+      </div>
+
+      <div class="boot-actions">
+        <button id="init-btn" class="cta-ripple" type="button" aria-label="Inicializar la fiesta">
+          <span class="cta-ripple__glyph">&gt;</span>
+          <span class="cta-ripple__label">INITIALIZE_PARTY()</span>
+        </button>
+        <p class="boot-hint">// Presiona ejecutar para autorizar el acceso al evento</p>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= STATE 2 :: DASHBOARD ================= -->
+  <main id="dashboard" class="dashboard" hidden>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <!-- Top status bar -->
+    <header class="topbar glass">
+      <span class="topbar__badge"><span class="pulse-dot"></span> SYSTEM_ONLINE</span>
+      <span class="topbar__id">build: <strong>v31.0</strong></span>
+      <span class="topbar__id topbar__id--muted">uid: MIGUEL_FLORES</span>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" aria-label="Perfil del anfitrión">
+      <div class="hero__ring">
+        <svg class="radar" viewBox="0 0 220 220" role="img" aria-label="Anillo HUD de radar">
+          <defs>
+            <radialGradient id="radarGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="rgba(6,182,212,0.35)" />
+              <stop offset="70%" stop-color="rgba(6,182,212,0.05)" />
+              <stop offset="100%" stop-color="rgba(6,182,212,0)" />
+            </radialGradient>
+            <linearGradient id="sweepGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="rgba(16,185,129,0)" />
+              <stop offset="100%" stop-color="rgba(16,185,129,0.55)" />
+            </linearGradient>
+          </defs>
+          <circle cx="110" cy="110" r="104" fill="none" stroke="var(--border-glow)" stroke-width="1" />
+          <circle cx="110" cy="110" r="80" fill="none" stroke="rgba(6,182,212,0.18)" stroke-width="1" />
+          <circle cx="110" cy="110" r="56" fill="none" stroke="rgba(6,182,212,0.12)" stroke-width="1" />
+          <line x1="110" y1="6" x2="110" y2="214" stroke="rgba(6,182,212,0.1)" />
+          <line x1="6" y1="110" x2="214" y2="110" stroke="rgba(6,182,212,0.1)" />
+          <g class="radar__sweep">
+            <path d="M110 110 L110 6 A104 104 0 0 1 200 60 Z" fill="url(#sweepGrad)" />
+          </g>
+          <circle cx="110" cy="110" r="104" fill="url(#radarGrad)" />
+        </svg>
+        <div class="hero__avatar">
+          <!-- Reemplaza el src por la foto real de Miguel -->
+          <img src="Public/img/foto.jpeg" alt="Miguel Flores" onerror="this.style.display='none';this.parentNode.classList.add('hero__avatar--fallback');" />
+          <span class="hero__avatar-fallback" aria-hidden="true">MF</span>
+        </div>
+      </div>
+
+      <div class="hero__meta">
+        <p class="mono-label">// EVENT_HOST</p>
+        <h1 class="hero__name">Miguel&nbsp;Flores</h1>
+        <p class="hero__sub"><span class="tag">@Senior Software Engineer</span></p>
+        <p class="hero__release">Deploying <strong>Birthday.release(31)</strong> — celebración oficial del build 31.0</p>
+      </div>
+    </section>
+
+    <!-- COUNTDOWN -->
+    <section class="countdown" aria-label="Cuenta regresiva del evento">
+      <p class="section-kicker mono-label">// TIME_TO_DEPLOY</p>
+      <div class="countdown__grid" id="countdown-grid">
+        <div class="flip-unit glass">
+          <span class="flip-unit__value" id="cd-days" data-prev="00">00</span>
+          <span class="flip-unit__label">DAYS</span>
+        </div>
+        <div class="flip-unit glass">
+          <span class="flip-unit__value" id="cd-hours" data-prev="00">00</span>
+          <span class="flip-unit__label">HOURS</span>
+        </div>
+        <div class="flip-unit glass">
+          <span class="flip-unit__value" id="cd-mins" data-prev="00">00</span>
+          <span class="flip-unit__label">MINUTES</span>
+        </div>
+        <div class="flip-unit glass">
+          <span class="flip-unit__value" id="cd-secs" data-prev="00">00</span>
+          <span class="flip-unit__label">SECONDS</span>
+        </div>
+      </div>
+      <p class="countdown__status" id="countdown-status" hidden>
+        <span class="pulse-dot pulse-dot--green"></span> SYSTEM_ACTIVE — EVENT_IN_PROGRESS
+      </p>
+    </section>
+
+    <!-- LOGISTICS -->
+    <section class="logistics" aria-label="Logística del evento">
+      <p class="section-kicker mono-label">// EVENT_CONFIG.json</p>
+      <div class="log-grid">
+        <article class="log-card glass">
+          <div class="log-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          </div>
+          <h3 class="log-card__title">host.location</h3>
+          <p class="log-card__value" id="venue-name">Por confirmar</p>
+          <p class="log-card__hint">Toca para abrir el mapa</p>
+          <a class="log-card__btn" id="maps-btn" href="#" target="_blank" rel="noopener">&gt; OPEN_GOOGLE_MAPS</a>
+        </article>
+
+        <article class="log-card glass">
+          <div class="log-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v3M16 3v3"/></svg>
+          </div>
+          <h3 class="log-card__title">event.timestamp</h3>
+          <p class="log-card__value">14 · AGO · 2026</p>
+          <p class="log-card__hint">21:30 hrs <span class="mono-muted">(9:30 PM)</span></p>
+          <span class="log-card__btn log-card__btn--static">&gt; CRON: 30 21 14 08 *</span>
+        </article>
+
+        <article class="log-card glass">
+          <div class="log-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20v-1a6 6 0 0 1 12 0v1"/><circle cx="10" cy="7" r="3.2"/><path d="M17 11l2 2 3-3.5"/></svg>
+          </div>
+          <h3 class="log-card__title">dress.code</h3>
+          <p class="log-card__value">Tech Casual</p>
+          <p class="log-card__hint">Dev Outfit — dark mode friendly</p>
+          <span class="log-card__btn log-card__btn--static">&gt; STYLE: developer/casual</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- RSVP -->
+    <section class="rsvp" aria-label="Confirmación de asistencia">
+      <p class="section-kicker mono-label">// RSVP_MODULE.exec()</p>
+      <article class="rsvp-card glass">
+        <header class="rsvp-card__head">
+          <h2>Confirmar asistencia</h2>
+          <p>POST tu respuesta al servidor del evento</p>
+        </header>
+
+        <form id="rsvp-form" novalidate>
+          <div class="field">
+            <label for="fld-name">Nombre completo <span class="req">*</span></label>
+            <input type="text" id="fld-name" name="nombre" autocomplete="name"
+                   placeholder="const invitado = '...'" required minlength="2" />
+            <span class="field__err" data-err="name"></span>
+          </div>
+
+          <div class="field">
+            <label>¿Confirmas asistencia? <span class="req">*</span></label>
+            <div class="radio-row" role="radiogroup" aria-label="Confirmación de asistencia">
+              <label class="radio-chip">
+                <input type="radio" name="asistencia" value="Sí asistiré" required />
+                <span class="radio-chip__box">return true — Sí asistiré</span>
+              </label>
+              <label class="radio-chip">
+                <input type="radio" name="asistencia" value="No podré ir" />
+                <span class="radio-chip__box">return false — No podré ir</span>
+              </label>
+            </div>
+            <span class="field__err" data-err="asistencia"></span>
+          </div>
+
+          <div class="field">
+            <label for="fld-guests">Acompañantes</label>
+            <input type="number" id="fld-guests" name="acompanantes" min="0" max="10" value="0" />
+            <span class="field__hint mono-muted">// deshabilitado si return false</span>
+          </div>
+
+          <div class="field">
+            <label for="fld-msg">Mensaje / logs adicionales</label>
+            <textarea id="fld-msg" name="mensaje" rows="3"
+                      placeholder="console.log('Escribe algo para Miguel...')"></textarea>
+          </div>
+
+          <button type="submit" id="rsvp-submit" class="rsvp-submit">
+            <span class="rsvp-submit__label">&gt; SUBMIT_RSVP()</span>
+            <span class="rsvp-submit__spinner" aria-hidden="true"></span>
+          </button>
+        </form>
+      </article>
+    </section>
+
+    <!-- STICKY AUDIO WIDGET -->
+    <aside class="audio-widget glass" aria-label="Control de audio">
+      <button id="audio-toggle" class="audio-widget__btn" type="button" aria-label="Reproducir o pausar">
+        <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+        <svg class="ico-play" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M7 5v14l12-7z"/></svg>
+      </button>
+      <div class="equalizer" id="equalizer" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="audio-widget__meta">
+        <span class="audio-widget__track">Hotel Room Service</span>
+        <span class="audio-widget__artist">Pitbull</span>
+      </div>
+      <button id="audio-mute" class="audio-widget__btn audio-widget__btn--sm" type="button" aria-label="Silenciar o activar sonido">
+        <svg class="ico-vol" viewBox="0 0 24 24" fill="currentColor"><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M16 8a5 5 0 0 1 0 8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        <svg class="ico-muted" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M4 9v6h4l5 5V4L8 9H4z"/><path d="M17 9l4 6M21 9l-4 6" stroke="currentColor" stroke-width="1.6"/></svg>
+      </button>
+    </aside>
+
+    <footer class="site-foot">
+      <p class="mono-muted">// EOF — Miguel_Flores_v31.0 &bull; compiled with ♥ &bull; 2026</p>
+    </footer>
+  </main>
+
+  <!-- ================= RSVP RESULT MODAL ================= -->
+  <div id="modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal__backdrop"></div>
+    <div class="modal__panel glass" role="document">
+      <div class="modal__terminal">
+        <header class="modal__head">
+          <span class="dot dot--red"></span><span class="dot dot--amber"></span><span class="dot dot--green"></span>
+          <span class="modal__headtitle">response.log</span>
+        </header>
+        <div class="modal__body" id="modal-body">
+          <!-- injected -->
+        </div>
+        <div class="modal__actions">
+          <button id="modal-primary" class="modal__btn" type="button">&gt; CLOSE()</button>
+          <button id="modal-retry" class="modal__btn modal__btn--ghost" type="button" hidden>&gt; RETRY()</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
