@@ -41,7 +41,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 a { color: inherit; text-decoration: none; }
 [hidden] { display: none !important; }
 
-/* ---------- FONDO FIJO (fondo.jpg detrás de toda la tarjeta) ---------- */
+/* ---------- FONDO FIJO (fondo.jpg detrás de toda la tarjeta) ----------
+   IMPORTANTE: NO usar background-attachment:fixed aquí. El propio elemento
+   ya está clavado al viewport con position:fixed + inset:0, así que jamás
+   se mueve ni recalcula con el scroll. Combinar ambas técnicas a la vez es
+   lo que causaba que la imagen se viera "saltando"/distorsionada al
+   deslizar (bug clásico en Safari/iOS y en navegadores móviles en general).
+   ========================================================= */
 .bg-photo {
   position: fixed;
   inset: 0;
@@ -52,7 +58,25 @@ a { color: inherit; text-decoration: none; }
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
+  overflow: hidden; /* contiene el brillo animado de abajo, que se dibuja más grande que la caja */
+}
+
+/* Brillo ambiental que se desplaza lentamente por encima del fondo fijo.
+   Da sensación de movimiento/vida sin tocar ni desplazar la foto en sí. */
+.bg-photo::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(560px 560px at 50% 50%, rgba(6, 182, 212, 0.16), transparent 65%);
+  background-repeat: no-repeat;
+  filter: blur(20px);
+  animation: bgGlowDrift 18s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+@keyframes bgGlowDrift {
+  0%   { background-position: 10% 15%; }
+  50%  { background-position: 85% 55%; }
+  100% { background-position: 25% 90%; }
 }
 
 /* ---------- SHARED UTILITIES ---------- */
@@ -330,19 +354,19 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
 
 /* RSVP */
 .rsvp { padding: 1.5rem 0 2rem; }
-.rsvp-card { border-radius: var(--radius); padding: 1.8rem; border: 1px solid rgba(255,255,255,0.07); max-width: 680px; margin: 0 auto; }
+.rsvp-card { border-radius: var(--radius); padding: 1.6rem 1.7rem; border: 1px solid rgba(255,255,255,0.07); max-width: 600px; margin: 0 auto; }
 .rsvp-card__head h2 { font-size: 1.5rem; }
-.rsvp-card__head p { color: var(--text-muted); font-family: var(--font-mono); font-size: .82rem; margin-top: .2rem; margin-bottom: 1.4rem; }
+.rsvp-card__head p { color: var(--text-muted); font-family: var(--font-mono); font-size: .82rem; margin-top: .2rem; margin-bottom: 1.1rem; }
 
-.field { margin-bottom: 1.2rem; }
-.field label { display: block; font-family: var(--font-mono); font-size: .82rem; margin-bottom: .5rem; color: #cbd5e1; }
+.field { margin-bottom: .9rem; }
+.field label { display: block; font-family: var(--font-mono); font-size: .82rem; margin-bottom: .4rem; color: #cbd5e1; }
 .req { color: #ff5f56; }
 .field input[type="text"],
 .field input[type="number"],
 .field textarea {
   width: 100%; font-family: var(--font-mono); font-size: .92rem; color: var(--text-primary);
   background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.09);
-  border-radius: var(--radius-sm); padding: .8rem .9rem; resize: vertical;
+  border-radius: var(--radius-sm); padding: .7rem .9rem; resize: vertical;
   transition: border-color .2s, box-shadow .2s, opacity .2s;
 }
 .field input::placeholder, .field textarea::placeholder { color: #4b5773; }
@@ -352,15 +376,25 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
 }
 .field input:disabled { opacity: .4; cursor: not-allowed; }
 .field.invalid input, .field.invalid textarea { border-color: #ff5f56; box-shadow: 0 0 0 3px rgba(255,95,86,0.14); }
-.field__err { display: block; font-family: var(--font-mono); font-size: .72rem; color: #ff7b73; margin-top: .4rem; min-height: 1em; }
+.field__err { display: block; font-family: var(--font-mono); font-size: .72rem; color: #ff7b73; margin-top: .4rem; max-height: 0; overflow: hidden; transition: max-height .2s var(--ease); }
+.field__err:not(:empty) { max-height: 2em; }
 .field__hint { display: block; margin-top: .4rem; }
 
-.radio-row { display: flex; gap: .8rem; flex-wrap: wrap; }
+/* Fila de 2 columnas: agrupa "asistencia" + "qué llevarás" para que el
+   formulario se vea compacto en vez de una sola columna larga con huecos */
+.field-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: .9rem 1.1rem;
+  margin-bottom: .9rem;
+}
+.field-row .field { margin-bottom: 0; }
+
+.radio-row { display: flex; gap: .6rem; flex-wrap: wrap; }
+.radio-row--stack { flex-direction: column; }
 .radio-chip { flex: 1 1 220px; cursor: pointer; }
 .radio-chip input { position: absolute; opacity: 0; pointer-events: none; }
 .radio-chip__box {
   display: block; font-family: var(--font-mono); font-size: .84rem; text-align: center;
-  padding: .8rem; border-radius: var(--radius-sm);
+  padding: .65rem; border-radius: var(--radius-sm);
   border: 1px solid rgba(255,255,255,0.09); background: rgba(0,0,0,0.22);
   transition: all .2s var(--ease); color: var(--text-muted);
 }
@@ -495,6 +529,7 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
   .countdown__grid { gap: .5rem; }
   .flip-unit { padding: 1rem .3rem .8rem; }
   .radio-row { flex-direction: column; }
+  .field-row { grid-template-columns: 1fr; gap: .9rem; }
   .audio-widget__meta { display: none; }
   .rsvp-card { padding: 1.3rem; }
   .boot-terminal { font-size: .78rem; min-height: 200px; }

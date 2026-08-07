@@ -23,7 +23,8 @@
     <source src="Public/audio/Pitbull%20-%20Hotel%20Room%20Service.mp3" type="audio/mpeg" />
   </audio>
   <!-- Ambiente de "tecleo" para la ventana del editor de código (State 1) -->
-  <audio id="typing-audio" preload="auto" loop>
+  <!-- Sin loop: suena una sola vez y se detiene sola al terminar -->
+  <audio id="typing-audio" preload="auto">
     <source src="Public/audio/programando.mp3" type="audio/mpeg" />
   </audio>
 
@@ -188,38 +189,34 @@
             <span class="field__err" data-err="name"></span>
           </div>
 
-          <div class="field">
-            <label>¿Confirmas asistencia? <span class="req">*</span></label>
-            <div class="radio-row" role="radiogroup" aria-label="Confirmación de asistencia">
-              <label class="radio-chip">
-                <input type="radio" name="asistencia" value="Sí asistiré" required />
-                <span class="radio-chip__box">return true — Sí asistiré</span>
-              </label>
-              <label class="radio-chip">
-                <input type="radio" name="asistencia" value="No podré ir" />
-                <span class="radio-chip__box">return false — No podré ir</span>
-              </label>
+          <div class="field-row">
+            <div class="field">
+              <label>¿Confirmas asistencia? <span class="req">*</span></label>
+              <div class="radio-row radio-row--stack" role="radiogroup" aria-label="Confirmación de asistencia">
+                <label class="radio-chip">
+                  <input type="radio" name="asistencia" value="Sí asistiré" required />
+                  <span class="radio-chip__box">return true — Sí asistiré</span>
+                </label>
+                <label class="radio-chip">
+                  <input type="radio" name="asistencia" value="No podré ir" />
+                  <span class="radio-chip__box">return false — No podré ir</span>
+                </label>
+              </div>
+              <span class="field__err" data-err="asistencia"></span>
             </div>
-            <span class="field__err" data-err="asistencia"></span>
-          </div>
 
-          <div class="field">
-            <label for="fld-guests">Acompañantes</label>
-            <input type="number" id="fld-guests" name="acompanantes" min="0" max="10" value="0" />
-            <span class="field__hint mono-muted">// deshabilitado si return false</span>
-          </div>
-
-          <div class="field" id="field-aporte">
-            <label>¿Qué llevarás? <span class="mono-muted">// opcional</span></label>
-            <div class="radio-row" role="radiogroup" aria-label="Qué llevarás al evento">
-              <label class="radio-chip">
-                <input type="radio" name="aporte" value="Regalo" />
-                <span class="radio-chip__box">🎁 Regalo</span>
-              </label>
-              <label class="radio-chip">
-                <input type="radio" name="aporte" value="Trago" />
-                <span class="radio-chip__box">🥂 Trago</span>
-              </label>
+            <div class="field" id="field-aporte">
+              <label>¿Qué llevarás? <span class="mono-muted">// opcional</span></label>
+              <div class="radio-row radio-row--stack" role="radiogroup" aria-label="Qué llevarás al evento">
+                <label class="radio-chip">
+                  <input type="radio" name="aporte" value="Regalo" />
+                  <span class="radio-chip__box">🎁 Regalo</span>
+                </label>
+                <label class="radio-chip">
+                  <input type="radio" name="aporte" value="Trago" />
+                  <span class="radio-chip__box">🥂 Trago</span>
+                </label>
+              </div>
             </div>
           </div>
 

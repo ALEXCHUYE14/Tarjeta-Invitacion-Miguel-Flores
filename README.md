@@ -37,6 +37,6 @@ Stack: HTML5 semántico + CSS moderno (Grid/Flex, glassmorphism) + Vanilla JS ES
 - **Autoplay-safe**: el audio (`volume = 0.8`) arranca dentro del clic del CTA, cumpliendo la política de gesto de usuario en móviles.
 - **CORS**: el envío usa `fetch(..., { mode: 'no-cors' })` con `URLSearchParams`. La respuesta es opaca, así que el front asume éxito salvo error de red; el registro real lo confirma tu Sheet.
 - **Countdown**: objetivo `14/AGO/2026 21:30` (hora local del navegador). Al pasar la fecha muestra `SYSTEM_ACTIVE — EVENT_IN_PROGRESS`.
-- **Columnas del Sheet**: `Timestamp | Nombre | Asistencia | Acompañantes | Aporte | Mensaje` (`Aporte` = "Regalo" / "Trago" / vacío).
-  ⚠️ Si ya ejecutaste `setupSheet()` antes con el header viejo (sin `Aporte`), el encabezado de tu hoja no se actualiza solo: agrega manualmente "Aporte" en la columna E (y corre `Mensaje` a la F), o borra la fila 1 y vuelve a ejecutar `setupSheet()`.
+- **Columnas del Sheet**: `Timestamp | Nombre | Asistencia | Aporte | Mensaje` (`Aporte` = "Regalo" / "Trago" / vacío).
+  ⚠️ El encabezado de tu hoja no se actualiza solo si ya la inicializaste con una versión anterior de `Code.gs`: ajusta manualmente las columnas, o borra la fila 1 y vuelve a ejecutar `setupSheet()`.
 - Accesible: `prefers-reduced-motion`, roles ARIA, cierre de modal con `Esc`.

@@ -10,10 +10,10 @@ const CONFIG = {
   eventDate: new Date(2026, 7, 14, 21, 30, 0), // mes 7 = Agosto (0-indexed)
   audioVolume: 0.8,
   // 1) Pega aquí la URL /exec de tu Web App de Google Apps Script tras desplegar Code.gs
-  scriptURL: "https://script.google.com/macros/s/AKfycbxeV0Hmg8Kqkz2OEDa_DkRT74Eh8fMMnA9EW_xoiUOGHgTiach1qVBn_ZlXWuSv5C_sDQ/exec",
+  scriptURL: "https://script.google.com/macros/s/AKfycbwQPsS64qM1WlvamrdjvthoCv8tUjSITFsaLZqvv1ualASHvH7te7XrzU6qBojrG1lZag/exec",
   // 2) Ubicación del evento (para el botón y el mapa embebido de Google Maps)
   venueName: "Av. Emilio Hermoza Mz. O Lote 1, Nuevo Catacaos",
-  venueRef: "Referencia: Mi Niño",
+  venueRef: "Referencia: Mi Niño Dios, Piura, Perú",
   mapsQuery: "Av. Emilio Hermoza Mz. O Lote 1, Nuevo Catacaos, Piura, Perú"
 };
 
@@ -31,8 +31,9 @@ const typingAudio = $("#typing-audio");
 
 /* =========================================================
    0) TYPING AMBIENCE (Public/audio/programando.mp3)
-   Suena en loop mientras se "escribe" el boot sequence, simulando
-   que Miguel está programando en vivo.
+   Suena UNA sola vez (sin loop, ver index.html) mientras se "escribe"
+   el boot sequence, simulando que Miguel está programando en vivo.
+   Si termina antes que el boot sequence, simplemente se queda en silencio.
    ========================================================= */
 typingAudio.volume = 0.55;
 
@@ -306,7 +307,6 @@ function startCountdown() {
    ========================================================= */
 const form        = $("#rsvp-form");
 const submitBtn   = $("#rsvp-submit");
-const guestsInput = $("#fld-guests");
 const aporteInputs= $$('input[name="aporte"]');
 const modal       = $("#modal");
 const modalBody   = $("#modal-body");
@@ -314,13 +314,10 @@ const modalPanel  = $(".modal__panel");
 const modalClose  = $("#modal-primary");
 const modalRetry  = $("#modal-retry");
 
-// Deshabilita acompañantes y "qué llevarás" si "No podré ir"
+// Deshabilita "qué llevarás" si "No podré ir"
 $$('input[name="asistencia"]').forEach((r) => {
   r.addEventListener("change", () => {
     const going = form.asistencia.value === "Sí asistiré";
-    guestsInput.disabled = !going;
-    if (!going) guestsInput.value = 0;
-
     aporteInputs.forEach((a) => {
       a.disabled = !going;
       if (!going) a.checked = false;
@@ -353,11 +350,11 @@ form.addEventListener("submit", async (e) => {
 
   setLoading(true);
 
+  const going = form.asistencia.value === "Sí asistiré";
   const payload = {
     nombre: form.nombre.value.trim(),
     asistencia: form.asistencia.value,
-    acompanantes: guestsInput.disabled ? 0 : (parseInt(guestsInput.value, 10) || 0),
-    aporte: guestsInput.disabled ? "" : form.aporte.value,
+    aporte: going ? form.aporte.value : "",
     mensaje: form.mensaje.value.trim()
   };
 
@@ -366,7 +363,6 @@ form.addEventListener("submit", async (e) => {
     setLoading(false);
     showModal("success", payload);
     form.reset();
-    guestsInput.disabled = false;
     aporteInputs.forEach((a) => { a.disabled = false; });
   } catch (err) {
     setLoading(false);
@@ -483,14 +479,12 @@ function showModal(type, payload, err) {
   modalRetry.hidden = type !== "error";
 
   if (type === "success") {
-    const ac = payload ? payload.acompanantes : 0;
     const aporte = payload && payload.aporte ? escapeHtml(payload.aporte) : "—";
     modalBody.innerHTML = `
       <p><span class="status-ok">RSVP_ACCEPTED_200_OK</span></p>
       <p><span class="key">&gt;</span> host: Miguel_Flores_v31.0</p>
       <p><span class="key">&gt;</span> guest: ${escapeHtml(payload.nombre)}</p>
       <p><span class="key">&gt;</span> status: ${escapeHtml(payload.asistencia)}</p>
-      <p><span class="key">&gt;</span> party_size: +${ac}</p>
       <p><span class="key">&gt;</span> aporte: ${aporte}</p>
       <p style="margin-top:.8rem;color:#94a3b8;">// Tu respuesta fue registrada en el sistema. ¡Nos vemos el 14/AGO! 🎉</p>
     `;
