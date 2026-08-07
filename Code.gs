@@ -17,7 +17,7 @@
 
 var SHEET_ID = "1dB2e2_jFnxvooKZ4nXj4VvNJDOwXrni66Wl2lCl_xEAzu5CF9SIJnFku";
 var SHEET_NAME = "RSVP"; // nombre de la pestaña donde se guardan las respuestas
-var HEADERS = ["Timestamp", "Nombre", "Asistencia", "Acompañantes", "Mensaje"];
+var HEADERS = ["Timestamp", "Nombre", "Asistencia", "Acompañantes", "Aporte", "Mensaje"];
 
 /**
  * Devuelve (creando si hace falta) la pestaña de RSVP con encabezados.
@@ -58,6 +58,7 @@ function doPost(e) {
     var nombre       = String(data.nombre || "").trim();
     var asistencia   = String(data.asistencia || "").trim();
     var acompanantes = Number(data.acompanantes || 0);
+    var aporte       = String(data.aporte || "").trim();
     var mensaje      = String(data.mensaje || "").trim();
 
     if (!nombre) {
@@ -73,6 +74,7 @@ function doPost(e) {
       nombre,
       asistencia,
       acompanantes,
+      aporte,
       mensaje
     ]);
 
@@ -83,7 +85,8 @@ function doPost(e) {
       data: {
         nombre: nombre,
         asistencia: asistencia,
-        acompanantes: acompanantes
+        acompanantes: acompanantes,
+        aporte: aporte
       }
     });
   } catch (err) {

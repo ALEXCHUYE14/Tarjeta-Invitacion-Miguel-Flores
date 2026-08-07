@@ -217,7 +217,24 @@ a { color: inherit; text-decoration: none; }
 }
 .hero__avatar--fallback .hero__avatar-fallback { display: block; }
 
-.hero__name { font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 700; line-height: 1.05; margin: .3rem 0 .6rem; }
+.hero__name {
+  font-size: clamp(2rem, 6vw, 3.2rem); font-weight: 700; line-height: 1.05; margin: .3rem 0 .6rem;
+  color: var(--text-primary); /* fallback sólido si el navegador no soporta background-clip:text */
+}
+/* Shimmer progresivo: solo se activa si el navegador soporta recortar el fondo al texto,
+   así nunca se corre el riesgo de texto invisible (color transparente sin gradiente visible) */
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .hero__name {
+    background: linear-gradient(100deg, var(--text-primary) 40%, var(--accent-cyan) 50%, var(--text-primary) 60%);
+    background-size: 240% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: nameShimmer 5s ease-in-out infinite;
+  }
+}
+@keyframes nameShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -40% 0; }
+}
 .hero__sub .tag {
   font-family: var(--font-mono); font-size: .8rem; color: var(--terminal-green);
   border: 1px solid rgba(16,185,129,0.3); padding: .2rem .6rem; border-radius: 999px;
@@ -267,7 +284,10 @@ a { color: inherit; text-decoration: none; }
 
 /* LOGISTICS */
 .logistics { padding: 1.5rem 0 2.5rem; }
-.log-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+.log-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem;
+  align-items: start; /* evita que la tarjeta del mapa estire a sus vecinas */
+}
 .log-card {
   border-radius: var(--radius); padding: 1.4rem; border: 1px solid rgba(255,255,255,0.07);
   transition: transform .25s var(--ease), border-color .25s var(--ease), box-shadow .25s var(--ease);
@@ -284,7 +304,21 @@ a { color: inherit; text-decoration: none; }
 .log-card__icon svg { width: 22px; height: 22px; }
 .log-card__title { font-family: var(--font-mono); font-size: .82rem; color: var(--accent-cyan); margin-bottom: .5rem; }
 .log-card__value { font-size: 1.25rem; font-weight: 600; }
+.log-card__ref {
+  font-family: var(--font-mono); font-size: .8rem; color: var(--terminal-green);
+  margin-top: .3rem;
+}
+.log-card__ref:empty { display: none; }
 .log-card__hint { color: var(--text-muted); font-size: .88rem; margin-top: .2rem; }
+
+/* Mapa embebido cuadrado (Google Maps, sin API key) */
+.log-card__map {
+  position: relative; aspect-ratio: 1 / 1; width: 100%; margin-top: 1rem;
+  border-radius: var(--radius-sm); overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.09);
+  background: rgba(0,0,0,0.25); /* placeholder mientras carga el iframe */
+}
+.log-card__map iframe { width: 100%; height: 100%; border: 0; display: block; }
 .log-card__btn {
   display: inline-block; margin-top: 1.1rem; font-family: var(--font-mono); font-size: .78rem;
   color: var(--terminal-green); border: 1px solid rgba(16,185,129,0.3);
@@ -335,6 +369,8 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
   background: rgba(6,182,212,0.1); box-shadow: 0 0 0 3px rgba(6,182,212,0.12);
 }
 .radio-chip input:focus-visible + .radio-chip__box { outline: 2px solid var(--accent-cyan); outline-offset: 2px; }
+.radio-chip input:disabled + .radio-chip__box { opacity: .35; cursor: not-allowed; }
+.radio-chip:has(input:disabled) { cursor: not-allowed; }
 
 .rsvp-submit {
   position: relative; width: 100%; margin-top: .5rem;
@@ -398,6 +434,14 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
 
 /* Footer */
 .site-foot { text-align: center; padding: 2.5rem 0 1rem; }
+
+/* =========================================================
+   CONFETTI (celebración RSVP — símbolos de código cayendo)
+   ========================================================= */
+.confetti-canvas {
+  position: fixed; inset: 0; z-index: 65; /* por encima del modal (60) */
+  pointer-events: none; /* nunca bloquea clics en el modal */
+}
 
 /* =========================================================
    MODAL

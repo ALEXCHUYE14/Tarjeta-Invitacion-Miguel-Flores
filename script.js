@@ -11,9 +11,10 @@ const CONFIG = {
   audioVolume: 0.8,
   // 1) Pega aquí la URL /exec de tu Web App de Google Apps Script tras desplegar Code.gs
   scriptURL: "https://script.google.com/macros/s/AKfycbxeV0Hmg8Kqkz2OEDa_DkRT74Eh8fMMnA9EW_xoiUOGHgTiach1qVBn_ZlXWuSv5C_sDQ/exec",
-  // 2) Ubicación del evento (para el botón de Google Maps). Edita a gusto.
-  venueName: "Por confirmar",
-  mapsQuery: "" // ej. "Av. Ejemplo 123, Ciudad" — si vacío, usa venueName
+  // 2) Ubicación del evento (para el botón y el mapa embebido de Google Maps)
+  venueName: "Av. Emilio Hermoza Mz. O Lote 1, Nuevo Catacaos",
+  venueRef: "Referencia: Mi Niño",
+  mapsQuery: "Av. Emilio Hermoza Mz. O Lote 1, Nuevo Catacaos, Piura, Perú"
 };
 
 /* ---------------- DOM ---------------- */
@@ -26,54 +27,29 @@ const bootTerminal= $("#boot-terminal");
 const bootActions = $(".boot-actions");
 const initBtn     = $("#init-btn");
 const audio       = $("#event-audio");
+const typingAudio = $("#typing-audio");
 
 /* =========================================================
-   0) TYPING SOUND ENGINE (Web Audio API — clics de teclado sintetizados)
-   No usamos un archivo de audio: generamos un "clic" corto por cada
-   carácter para simular que se está programando en vivo.
+   0) TYPING AMBIENCE (Public/audio/programando.mp3)
+   Suena en loop mientras se "escribe" el boot sequence, simulando
+   que Miguel está programando en vivo.
    ========================================================= */
-let typingAudioCtx = null;
-function getTypingAudioCtx() {
-  if (!typingAudioCtx) {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (AC) typingAudioCtx = new AC();
-  }
-  return typingAudioCtx;
+typingAudio.volume = 0.55;
+
+function playTypingAudio() {
+  const p = typingAudio.play();
+  if (p && typeof p.catch === "function") p.catch(() => {}); // ignora bloqueo silencioso del navegador
 }
 
-function playKeyClick() {
-  const ctx = getTypingAudioCtx();
-  if (!ctx || ctx.state !== "running") return; // audio aún bloqueado: se ignora en silencio
-
-  const now = ctx.currentTime;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  // Pequeña variación aleatoria de tono/duración por tecla para que no suene robótico
-  const freq = 560 + Math.random() * 520;
-  osc.type = "square";
-  osc.frequency.setValueAtTime(freq, now);
-  osc.frequency.exponentialRampToValueAtTime(Math.max(80, freq * 0.4), now + 0.035);
-
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.13, now + 0.004);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045);
-
-  osc.connect(gain).connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.05);
+function stopTypingAudio() {
+  typingAudio.pause();
+  typingAudio.currentTime = 0;
 }
 
 // Los navegadores bloquean el audio hasta que hay un gesto real del usuario
-// (click / tecla / toque). Este helper intenta "despertar" el contexto.
-function unlockTypingAudio() {
-  const ctx = getTypingAudioCtx();
-  if (ctx && ctx.state === "suspended") ctx.resume().catch(() => {});
-}
-
-// Muestra un prompt tipo "press any key" y espera un gesto real antes de
-// arrancar el boot sequence, así el sonido de teclado suena desde la
-// primera línea (no solo tras pulsar INITIALIZE_PARTY()).
+// (click / tecla / toque). Muestra un prompt tipo "press any key" y espera
+// ese gesto antes de arrancar el boot sequence, así el audio de "programando"
+// suena desde la primera línea (no solo tras pulsar INITIALIZE_PARTY()).
 function waitForFirstGesture() {
   return new Promise((resolve) => {
     const line = document.createElement("div");
@@ -84,7 +60,7 @@ function waitForFirstGesture() {
     const start = () => {
       window.removeEventListener("keydown", start);
       window.removeEventListener("pointerdown", start);
-      unlockTypingAudio();
+      playTypingAudio();
       line.remove();
       resolve();
     };
@@ -120,11 +96,6 @@ function typeLine(html, speed) {
     function step() {
       if (i <= tokens.length) {
         line.innerHTML = tokens.slice(0, i).join("") + cursor;
-        // Sonido de "tecla" solo para caracteres visibles, no para etiquetas HTML
-        if (i > 0) {
-          const added = tokens[i - 1];
-          if (added && added[0] !== "<" && added.trim() !== "") playKeyClick();
-        }
         i++;
         setTimeout(step, speed);
       } else {
@@ -169,7 +140,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
    ========================================================= */
 initBtn.addEventListener("click", (e) => {
   spawnRipple(e, initBtn);
-  unlockTypingAudio(); // por si acaso, refuerza el desbloqueo del audio sintetizado
+  stopTypingAudio(); // corta el ambiente de "programando" al pasar a la fiesta
 
   // AUDIO ENGINE TRIGGER — se ejecuta dentro del gesto (evita autoplay-blocked)
   audio.volume = CONFIG.audioVolume;
@@ -188,8 +159,28 @@ initBtn.addEventListener("click", (e) => {
     dashboard.hidden = false;
     setPlayingUI(!audio.paused);
     startCountdown();
+    startUptime();
   }, 550);
 });
+
+/* =========================================================
+   2.1) UPTIME BADGE — reloj tipo "system uptime" desde que
+   arranca el dashboard (puramente decorativo, no afecta al resto)
+   ========================================================= */
+const uptimeEl = $("#uptime");
+let uptimeTimer = null;
+
+function startUptime() {
+  if (!uptimeEl || uptimeTimer) return; // evita timers duplicados si se llama más de una vez
+  const start = Date.now();
+  uptimeTimer = setInterval(() => {
+    const secs = Math.floor((Date.now() - start) / 1000);
+    const hh = pad(Math.floor(secs / 3600));
+    const mm = pad(Math.floor((secs % 3600) / 60));
+    const ss = pad(secs % 60);
+    uptimeEl.textContent = `uptime: ${hh}:${mm}:${ss}`;
+  }, 1000);
+}
 
 function spawnRipple(e, btn) {
   const rect = btn.getBoundingClientRect();
@@ -293,34 +284,47 @@ function startCountdown() {
 }
 
 /* =========================================================
-   5) LOGÍSTICA — Google Maps
+   5) LOGÍSTICA — Google Maps (botón + mapa embebido, misma fuente)
    ========================================================= */
 (function initVenue() {
   const venueEl = $("#venue-name");
+  const venueRefEl = $("#venue-ref");
   const mapsBtn = $("#maps-btn");
+  const mapFrame = $("#venue-map");
+
   if (venueEl) venueEl.textContent = CONFIG.venueName;
+  if (venueRefEl) venueRefEl.textContent = CONFIG.venueRef || "";
+
   const q = encodeURIComponent(CONFIG.mapsQuery || CONFIG.venueName || "");
   if (mapsBtn) mapsBtn.href = "https://www.google.com/maps/search/?api=1&query=" + q;
+  // Embed de Google Maps sin necesidad de API key
+  if (mapFrame && q) mapFrame.src = "https://www.google.com/maps?q=" + q + "&output=embed";
 })();
 
 /* =========================================================
    6) RSVP MODULE — validación + submit asíncrono
    ========================================================= */
-const form       = $("#rsvp-form");
-const submitBtn  = $("#rsvp-submit");
-const guestsInput= $("#fld-guests");
-const modal      = $("#modal");
-const modalBody  = $("#modal-body");
-const modalPanel = $(".modal__panel");
-const modalClose = $("#modal-primary");
-const modalRetry = $("#modal-retry");
+const form        = $("#rsvp-form");
+const submitBtn   = $("#rsvp-submit");
+const guestsInput = $("#fld-guests");
+const aporteInputs= $$('input[name="aporte"]');
+const modal       = $("#modal");
+const modalBody   = $("#modal-body");
+const modalPanel  = $(".modal__panel");
+const modalClose  = $("#modal-primary");
+const modalRetry  = $("#modal-retry");
 
-// Deshabilita acompañantes si "No podré ir"
+// Deshabilita acompañantes y "qué llevarás" si "No podré ir"
 $$('input[name="asistencia"]').forEach((r) => {
   r.addEventListener("change", () => {
     const going = form.asistencia.value === "Sí asistiré";
     guestsInput.disabled = !going;
     if (!going) guestsInput.value = 0;
+
+    aporteInputs.forEach((a) => {
+      a.disabled = !going;
+      if (!going) a.checked = false;
+    });
   });
 });
 
@@ -353,6 +357,7 @@ form.addEventListener("submit", async (e) => {
     nombre: form.nombre.value.trim(),
     asistencia: form.asistencia.value,
     acompanantes: guestsInput.disabled ? 0 : (parseInt(guestsInput.value, 10) || 0),
+    aporte: guestsInput.disabled ? "" : form.aporte.value,
     mensaje: form.mensaje.value.trim()
   };
 
@@ -362,6 +367,7 @@ form.addEventListener("submit", async (e) => {
     showModal("success", payload);
     form.reset();
     guestsInput.disabled = false;
+    aporteInputs.forEach((a) => { a.disabled = false; });
   } catch (err) {
     setLoading(false);
     showModal("error", null, err);
@@ -396,6 +402,80 @@ async function sendRSVP(payload) {
 }
 
 /* =========================================================
+   6.1) CONFETTI — celebración con símbolos de código al confirmar
+   ========================================================= */
+function prefersReducedMotion() {
+  return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function fireConfetti() {
+  const canvas = document.createElement("canvas");
+  canvas.className = "confetti-canvas";
+  canvas.setAttribute("aria-hidden", "true");
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) { canvas.remove(); return; } // navegador sin soporte de canvas: no rompe nada
+
+  const dpr = window.devicePixelRatio || 1;
+  function resize() {
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    canvas.style.width = window.innerWidth + "px";
+    canvas.style.height = window.innerHeight + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+
+  const GLYPHS = ["{ }", "< / >", ";", "01", "( )", "=>", "//"];
+  const COLORS = ["#06b6d4", "#10b981", "#f8fafc", "#ffbd2e"];
+  const particles = Array.from({ length: 80 }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: -30 - Math.random() * window.innerHeight * 0.5,
+    vx: (Math.random() - 0.5) * 2,
+    vy: 2 + Math.random() * 2.5,
+    rot: Math.random() * Math.PI,
+    vr: (Math.random() - 0.5) * 0.15,
+    size: 12 + Math.random() * 10,
+    glyph: GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
+    color: COLORS[Math.floor(Math.random() * COLORS.length)]
+  }));
+
+  const DURATION = 4200;
+  const start = performance.now();
+  let raf = null;
+
+  function frame(now) {
+    const elapsed = now - start;
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+    particles.forEach((p) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.02;
+      p.rot += p.vr;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.font = `700 ${p.size}px "JetBrains Mono", monospace`;
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, 1 - elapsed / DURATION);
+      ctx.fillText(p.glyph, 0, 0);
+      ctx.restore();
+    });
+
+    if (elapsed < DURATION) {
+      raf = requestAnimationFrame(frame);
+    } else {
+      window.removeEventListener("resize", resize);
+      canvas.remove();
+    }
+  }
+  raf = requestAnimationFrame(frame);
+}
+
+/* =========================================================
    7) MODAL (success / error)
    ========================================================= */
 function showModal(type, payload, err) {
@@ -404,14 +484,17 @@ function showModal(type, payload, err) {
 
   if (type === "success") {
     const ac = payload ? payload.acompanantes : 0;
+    const aporte = payload && payload.aporte ? escapeHtml(payload.aporte) : "—";
     modalBody.innerHTML = `
       <p><span class="status-ok">RSVP_ACCEPTED_200_OK</span></p>
       <p><span class="key">&gt;</span> host: Miguel_Flores_v31.0</p>
       <p><span class="key">&gt;</span> guest: ${escapeHtml(payload.nombre)}</p>
       <p><span class="key">&gt;</span> status: ${escapeHtml(payload.asistencia)}</p>
       <p><span class="key">&gt;</span> party_size: +${ac}</p>
+      <p><span class="key">&gt;</span> aporte: ${aporte}</p>
       <p style="margin-top:.8rem;color:#94a3b8;">// Tu respuesta fue registrada en el sistema. ¡Nos vemos el 14/AGO! 🎉</p>
     `;
+    if (!prefersReducedMotion()) fireConfetti();
   } else {
     modalBody.innerHTML = `
       <p><span class="status-err">ERROR_500_CONNECTION_FAILED</span></p>

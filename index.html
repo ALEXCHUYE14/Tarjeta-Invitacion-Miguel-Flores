@@ -22,6 +22,10 @@
   <audio id="event-audio" preload="auto" loop>
     <source src="Public/audio/Pitbull%20-%20Hotel%20Room%20Service.mp3" type="audio/mpeg" />
   </audio>
+  <!-- Ambiente de "tecleo" para la ventana del editor de código (State 1) -->
+  <audio id="typing-audio" preload="auto" loop>
+    <source src="Public/audio/programando.mp3" type="audio/mpeg" />
+  </audio>
 
   <!-- ================= STATE 1 :: SPLASH / TERMINAL BOOT ================= -->
   <section id="splash" class="splash" aria-label="Secuencia de arranque del sistema">
@@ -56,6 +60,7 @@
     <header class="topbar glass">
       <span class="topbar__badge"><span class="pulse-dot"></span> SYSTEM_ONLINE</span>
       <span class="topbar__id">build: <strong>v31.0</strong></span>
+      <span class="topbar__id topbar__id--muted" id="uptime">uptime: 00:00:00</span>
       <span class="topbar__id topbar__id--muted">uid: MIGUEL_FLORES</span>
     </header>
 
@@ -129,12 +134,17 @@
     <section class="logistics" aria-label="Logística del evento">
       <p class="section-kicker mono-label">// EVENT_CONFIG.json</p>
       <div class="log-grid">
-        <article class="log-card glass">
+        <article class="log-card log-card--map glass">
           <div class="log-card__icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
           </div>
           <h3 class="log-card__title">host.location</h3>
           <p class="log-card__value" id="venue-name">Por confirmar</p>
+          <p class="log-card__ref" id="venue-ref"></p>
+          <div class="log-card__map">
+            <iframe id="venue-map" title="Ubicación del evento en Google Maps" src=""
+                    loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
           <p class="log-card__hint">Toca para abrir el mapa</p>
           <a class="log-card__btn" id="maps-btn" href="#" target="_blank" rel="noopener">&gt; OPEN_GOOGLE_MAPS</a>
         </article>
@@ -197,6 +207,20 @@
             <label for="fld-guests">Acompañantes</label>
             <input type="number" id="fld-guests" name="acompanantes" min="0" max="10" value="0" />
             <span class="field__hint mono-muted">// deshabilitado si return false</span>
+          </div>
+
+          <div class="field" id="field-aporte">
+            <label>¿Qué llevarás? <span class="mono-muted">// opcional</span></label>
+            <div class="radio-row" role="radiogroup" aria-label="Qué llevarás al evento">
+              <label class="radio-chip">
+                <input type="radio" name="aporte" value="Regalo" />
+                <span class="radio-chip__box">🎁 Regalo</span>
+              </label>
+              <label class="radio-chip">
+                <input type="radio" name="aporte" value="Trago" />
+                <span class="radio-chip__box">🥂 Trago</span>
+              </label>
+            </div>
           </div>
 
           <div class="field">

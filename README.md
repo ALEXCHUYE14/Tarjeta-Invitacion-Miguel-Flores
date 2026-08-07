@@ -14,9 +14,11 @@ Stack: HTML5 semántico + CSS moderno (Grid/Flex, glassmorphism) + Vanilla JS ES
 
 ## Puesta en marcha (3 pasos)
 
-**1. Assets locales.** Coloca junto a los archivos:
-- `Pitbull - Hotel Room Service.mp3` (exactamente ese nombre)
-- `profile.jpg` (foto de Miguel; si falta, se muestra el fallback "MF")
+**1. Assets locales.** Coloca en `Public/`:
+- `Public/audio/Pitbull - Hotel Room Service.mp3` — suena al presionar `INITIALIZE_PARTY()`
+- `Public/audio/programando.mp3` — ambiente de "tecleo" en loop durante el boot sequence (State 1)
+- `Public/img/foto.jpeg` — foto de Miguel; si falta, se muestra el fallback "MF"
+- `Public/fondos/fondo.jpg` — fondo fijo detrás de toda la tarjeta
 
 **2. Backend (RSVP → Google Sheets).**
 - Abre tu hoja `1dB2e2_jFnxvooKZ4nXj4VvNJDOwXrni66Wl2lCl_xEAzu5CF9SIJnFku` → **Extensiones ▸ Apps Script**.
@@ -26,7 +28,7 @@ Stack: HTML5 semántico + CSS moderno (Grid/Flex, glassmorphism) + Vanilla JS ES
 
 **3. Conecta el front.** En `script.js`, dentro de `CONFIG`:
 - `scriptURL`: pega la URL `/exec`.
-- `venueName` / `mapsQuery`: dirección del evento (para el botón de Google Maps).
+- `venueName` / `venueRef` / `mapsQuery`: dirección del evento — alimentan a la vez el botón "OPEN_GOOGLE_MAPS" y el mapa embebido cuadrado (mismo query, sin API key: `google.com/maps?q=...&output=embed`).
 
 > Nota: mientras `scriptURL` no esté configurada, el formulario corre en **modo demo** (simula el envío y muestra el modal de éxito sin escribir en el Sheet).
 
@@ -35,5 +37,6 @@ Stack: HTML5 semántico + CSS moderno (Grid/Flex, glassmorphism) + Vanilla JS ES
 - **Autoplay-safe**: el audio (`volume = 0.8`) arranca dentro del clic del CTA, cumpliendo la política de gesto de usuario en móviles.
 - **CORS**: el envío usa `fetch(..., { mode: 'no-cors' })` con `URLSearchParams`. La respuesta es opaca, así que el front asume éxito salvo error de red; el registro real lo confirma tu Sheet.
 - **Countdown**: objetivo `14/AGO/2026 21:30` (hora local del navegador). Al pasar la fecha muestra `SYSTEM_ACTIVE — EVENT_IN_PROGRESS`.
-- **Columnas del Sheet**: `Timestamp | Nombre | Asistencia | Acompañantes | Mensaje`.
+- **Columnas del Sheet**: `Timestamp | Nombre | Asistencia | Acompañantes | Aporte | Mensaje` (`Aporte` = "Regalo" / "Trago" / vacío).
+  ⚠️ Si ya ejecutaste `setupSheet()` antes con el header viejo (sin `Aporte`), el encabezado de tu hoja no se actualiza solo: agrega manualmente "Aporte" en la columna E (y corre `Mensaje` a la F), o borra la fila 1 y vuelve a ejecutar `setupSheet()`.
 - Accesible: `prefers-reduced-motion`, roles ARIA, cierre de modal con `Esc`.
