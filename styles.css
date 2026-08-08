@@ -193,18 +193,29 @@ a { color: inherit; text-decoration: none; }
   position: relative; min-height: 100vh;
   max-width: var(--maxw); margin: 0 auto; padding: 1rem 1.1rem 3rem;
   animation: dashIn .7s var(--ease) both;
+  /* Sombra de texto sutil: mantiene el texto legible sobre fondo.jpg ahora
+     que las tarjetas ya no tienen su propio panel de fondo (ver más abajo).
+     text-shadow se hereda, así que cubre todo el texto del dashboard sin
+     agregar ningún fondo/marco extra. */
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
 }
 @keyframes dashIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
-.bg-grid {
-  position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background-image:
-    linear-gradient(rgba(6,182,212,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(6,182,212,0.05) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(1000px 700px at 50% 0%, #000 30%, transparent 80%);
-  -webkit-mask-image: radial-gradient(1000px 700px at 50% 0%, #000 30%, transparent 80%);
+/* Segunda ventana (dashboard): sin fondo ni marco en ninguna "tarjeta".
+   Solo debe verse fondo.jpg (capa fija .bg-photo) detrás de todo el texto
+   y los efectos. Se sobreescribe .glass únicamente aquí (mayor especificidad
+   que la regla base) para no afectar el boot-card de la State 1 ni el modal. */
+.dashboard .glass {
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  box-shadow: none;
 }
+
+/* La cuadrícula decorativa también es "fondo": se retira para que la única
+   imagen de fondo visible sea fondo.jpg. */
+.bg-grid { display: none; }
 
 /* Topbar */
 .topbar {
@@ -528,11 +539,18 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
   .log-grid { grid-template-columns: 1fr; }
   .countdown__grid { gap: .5rem; }
   .flip-unit { padding: 1rem .3rem .8rem; }
-  .radio-row { flex-direction: column; }
-  .field-row { grid-template-columns: 1fr; gap: .9rem; }
   .audio-widget__meta { display: none; }
-  .rsvp-card { padding: 1.3rem; }
   .boot-terminal { font-size: .78rem; min-height: 200px; }
+
+  /* RSVP: en móvil todo quedaba muy separado (fila de 2 columnas apilada +
+     radio-chips + botón), así que se comprime el espaciado vertical. */
+  .rsvp-card { padding: 1.1rem; }
+  .rsvp-card__head p { margin-bottom: .8rem; }
+  .field { margin-bottom: .65rem; }
+  .field-row { grid-template-columns: 1fr; gap: .65rem; margin-bottom: .65rem; }
+  .radio-row { flex-direction: column; gap: .45rem; }
+  .radio-chip__box { padding: .55rem; }
+  .rsvp-submit { margin-top: .2rem; padding: .85rem; }
 }
 @media (min-width: 1280px) {
   .dashboard { padding-top: 1.5rem; }
