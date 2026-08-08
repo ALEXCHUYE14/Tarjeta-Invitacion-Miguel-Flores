@@ -10,7 +10,7 @@ const CONFIG = {
   eventDate: new Date(2026, 7, 14, 21, 30, 0), // mes 7 = Agosto (0-indexed)
   audioVolume: 0.8,
   // 1) Pega aquí la URL /exec de tu Web App de Google Apps Script tras desplegar Code.gs
-  scriptURL: "https://script.google.com/macros/s/AKfycbxJjtLb7tEKsiGAb1aWoKfoRgOtVbT07i4Sz5uFz6p5rHkEAlmjYttGGket0gMY0LZgeg/exec",
+  scriptURL: "https://script.google.com/macros/s/AKfycbz9tOakdFJeFxtvm4b5izd1WrT6SS0hZ3JW3KmEnm4diobX1sInSlR1oOIP2jFy44i9Zw/exec",
   // 2) Ubicación del evento (para el botón y el mapa embebido de Google Maps)
   venueName: "Av. Emilio Hermoza Mz. O Lote 1, Nuevo Catacaos",
   venueRef: "Referencia: Mi Niño Dios, Piura, Perú",
