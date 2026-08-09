@@ -6,7 +6,7 @@
 /* ---------- DESIGN TOKENS ---------- */
 :root {
   --bg-main: #090d16;
-  --bg-card: rgba(15, 23, 42, 0.65);
+  --bg-card: rgba(15, 23, 42, 0.22); /* bien transparente: se ve fondo.jpg detrás de todas las tarjetas */
   --accent-cyan: #06b6d4;
   --terminal-green: #10b981;
   --text-primary: #f8fafc;
@@ -383,8 +383,15 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
 }
 .field input:disabled { opacity: .4; cursor: not-allowed; }
 .field.invalid input, .field.invalid textarea { border-color: #ff5f56; box-shadow: 0 0 0 3px rgba(255,95,86,0.14); }
-.field__err { display: block; font-family: var(--font-mono); font-size: .72rem; color: #ff7b73; margin-top: .4rem; max-height: 0; overflow: hidden; transition: max-height .2s var(--ease); }
-.field__err:not(:empty) { max-height: 2em; }
+.field__err {
+  display: block; font-family: var(--font-mono); font-size: .72rem; color: #ff7b73;
+  margin-top: 0; max-height: 0; overflow: hidden;
+  transition: max-height .2s var(--ease), margin-top .2s var(--ease);
+}
+/* El margen solo aparece junto con el mensaje real: así un campo sin error
+   no deja espacio muerto reservado (el overflow:hidden por sí solo no
+   recorta el margin-top, así que había que anularlo explícitamente). */
+.field__err:not(:empty) { max-height: 2em; margin-top: .4rem; }
 .field__hint { display: block; margin-top: .4rem; }
 
 /* Fila de 2 columnas: agrupa "asistencia" + "qué llevarás" para que el
@@ -538,17 +545,20 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
   .audio-widget__meta { display: none; }
   .boot-terminal { font-size: .78rem; min-height: 200px; }
 
-  /* RSVP: en móvil el botón quedaba muy separado del resto del formulario;
-     se comprime todo el ritmo vertical (labels, campos, chips y botón). */
-  .rsvp-card { padding: 1rem; }
-  .rsvp-card__head p { margin-bottom: .7rem; }
-  .field { margin-bottom: .5rem; }
-  .field label { margin-bottom: .3rem; }
-  .field-row { grid-template-columns: 1fr; gap: .5rem; margin-bottom: .5rem; }
-  .radio-row { flex-direction: column; gap: .35rem; }
-  .radio-chip__box { padding: .5rem; }
-  .field__hint { margin-top: .25rem; }
-  .rsvp-submit { margin-top: 0; padding: .75rem; }
+  /* RSVP: en móvil todo se veía muy largo y separado; se comprime al
+     máximo el ritmo vertical (sección, tarjeta, labels, campos, chips
+     y botón) para que quede compacto. */
+  .rsvp { padding: 1rem 0 1.2rem; }
+  .rsvp-card { padding: .9rem; }
+  .rsvp-card__head h2 { font-size: 1.3rem; }
+  .rsvp-card__head p { margin-bottom: .55rem; }
+  .field { margin-bottom: .4rem; }
+  .field label { margin-bottom: .25rem; }
+  .field-row { grid-template-columns: 1fr; gap: .4rem; margin-bottom: .4rem; }
+  .radio-row { flex-direction: column; gap: .3rem; }
+  .radio-chip__box { padding: .45rem; }
+  .field__hint { margin-top: .2rem; }
+  .rsvp-submit { margin-top: 0; padding: .7rem; }
 }
 @media (min-width: 1280px) {
   .dashboard { padding-top: 1.5rem; }
