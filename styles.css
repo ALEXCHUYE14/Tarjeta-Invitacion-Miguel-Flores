@@ -210,13 +210,21 @@ a { color: inherit; text-decoration: none; }
   -webkit-mask-image: radial-gradient(1000px 700px at 50% 0%, #000 30%, transparent 80%);
 }
 
-/* Tarjetas del dashboard sin color de fondo, conservando su marco (borde +
-   sombra + desenfoque, heredados de .glass). El reloj/countdown (.flip-unit)
-   queda excluido a propósito: no se toca, mantiene su fondo tal cual. */
+/* Tarjetas del dashboard sin fondo, conservando solo su marco (borde +
+   sombra). El reloj/countdown (.flip-unit) queda excluido a propósito: no
+   se toca, mantiene su fondo y desenfoque tal cual estaban.
+   IMPORTANTE: también se anula backdrop-filter aquí. Quitar solo el
+   "background" no bastaba — el desenfoque de fondo seguía difuminando
+   fondo.jpg detrás de la tarjeta, y ese desenfoque sobre el overlay oscuro
+   se veía igual a un fondo sólido aunque no lo fuera. Sin blur, se ve la
+   foto nítida directamente a través del marco. */
 .topbar.glass,
 .log-card.glass,
-.audio-widget.glass {
+.audio-widget.glass,
+.rsvp-card.glass {
   background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* Topbar */
@@ -368,9 +376,8 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
 /* RSVP */
 .rsvp { padding: 1.5rem 0 2rem; }
 .rsvp-card { border-radius: var(--radius); padding: 1.6rem 1.7rem; border: 1px solid rgba(255,255,255,0.07); max-width: 600px; margin: 0 auto; }
-/* La tarjeta del formulario conserva su marco (borde + sombra + desenfoque),
-   pero sin color de fondo: se ve la foto directamente detrás, algo borrosa. */
-.rsvp-card.glass { background: transparent; }
+/* Fondo y desenfoque anulados junto con topbar/log-card/audio-widget más
+   arriba (.rsvp-card.glass está incluido en ese selector combinado). */
 .rsvp-card__head h2 { font-size: 1.5rem; }
 .rsvp-card__head p { color: var(--text-muted); font-family: var(--font-mono); font-size: .82rem; margin-top: .2rem; margin-bottom: 1.1rem; }
 
