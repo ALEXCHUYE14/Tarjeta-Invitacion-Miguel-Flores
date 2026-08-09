@@ -210,6 +210,15 @@ a { color: inherit; text-decoration: none; }
   -webkit-mask-image: radial-gradient(1000px 700px at 50% 0%, #000 30%, transparent 80%);
 }
 
+/* Tarjetas del dashboard sin color de fondo, conservando su marco (borde +
+   sombra + desenfoque, heredados de .glass). El reloj/countdown (.flip-unit)
+   queda excluido a propósito: no se toca, mantiene su fondo tal cual. */
+.topbar.glass,
+.log-card.glass,
+.audio-widget.glass {
+  background: none;
+}
+
 /* Topbar */
 .topbar {
   display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
@@ -405,6 +414,13 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
 .radio-row { display: flex; gap: .6rem; flex-wrap: wrap; }
 .radio-row--stack { flex-direction: column; }
 .radio-chip { flex: 1 1 220px; cursor: pointer; }
+/* BUG corregido: flex-basis (220px) se mide en el eje principal. Al apilar
+   en columna (--stack, o el media query móvil de abajo) el eje principal
+   pasa a ser vertical, así que ese 220px se interpretaba como ALTO y
+   flex-grow:1 lo estiraba aún más — eso era el hueco enorme entre "Regalo"
+   y "Trago" (o entre "Sí asistiré" y "No podré ir") de las capturas.
+   En columna cada chip debe medir solo lo que necesita su contenido. */
+.radio-row--stack .radio-chip { flex: 0 0 auto; }
 .radio-chip input { position: absolute; opacity: 0; pointer-events: none; }
 .radio-chip__box {
   display: block; font-family: var(--font-mono); font-size: .84rem; text-align: center;
@@ -556,6 +572,7 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
   .field label { margin-bottom: .25rem; }
   .field-row { grid-template-columns: 1fr; gap: .4rem; margin-bottom: .4rem; }
   .radio-row { flex-direction: column; gap: .3rem; }
+  .radio-row .radio-chip { flex: 0 0 auto; } /* misma corrección que .radio-row--stack, aquí por si acaso */
   .radio-chip__box { padding: .45rem; }
   .field__hint { margin-top: .2rem; }
   .rsvp-submit { margin-top: 0; padding: .7rem; }

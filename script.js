@@ -74,7 +74,7 @@ function waitForFirstGesture() {
    1) TERMINAL BOOT SEQUENCE (typewriter)
    ========================================================= */
 const BOOT_LINES = [
-  { t: '<span class="key">[INIT_SYS]</span>: Loading Bienvenidos A la fiesta de Miguel Flores', d: 22 },
+  { t: '<span class="key">[INIT_SYS]</span>: Loading Bienvenidos A la fiesta privada de Miguel Flores', d: 22 },
   { t: '<span class="key">[AUTH]</span>: Tarjeta de acceso biometrico ..... CONCEDIDO <span class="ok">GRANTED</span>', d: 18 },
   { t: '<span class="key">[MODULE]</span>: montaje de /countdown_engine ..... <span class="ok">OK</span>', d: 16 },
   { t: '<span class="key">[MODULE]</span>: montando /audio_engine [Pitbull - Hotel Room Service.mp3] ..... <span class="ok">OK</span>', d: 16 },
@@ -482,7 +482,7 @@ function showModal(type, payload, err) {
     const aporte = payload && payload.aporte ? escapeHtml(payload.aporte) : "—";
     modalBody.innerHTML = `
       <p><span class="status-ok">RSVP_ACCEPTED_200_OK</span></p>
-      <p><span class="key">&gt;</span> host: Miguel_Flores_v31.0</p>
+      <p><span class="key">&gt;</span> host: Fiesta Privada de Miguel Flores</p>
       <p><span class="key">&gt;</span> guest: ${escapeHtml(payload.nombre)}</p>
       <p><span class="key">&gt;</span> status: ${escapeHtml(payload.asistencia)}</p>
       <p><span class="key">&gt;</span> aporte: ${aporte}</p>
