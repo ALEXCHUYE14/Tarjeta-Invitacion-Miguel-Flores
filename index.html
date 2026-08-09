@@ -206,17 +206,18 @@
             </div>
 
             <div class="field" id="field-aporte">
-              <label>¿Qué llevarás? <span class="mono-muted">// opcional</span></label>
+              <label>¿Qué llevarás? <span class="req">*</span></label>
               <div class="radio-row radio-row--stack" role="radiogroup" aria-label="Qué llevarás al evento">
                 <label class="radio-chip">
-                  <input type="radio" name="aporte" value="Regalo" />
+                  <input type="radio" name="aporte" value="Regalo" required />
                   <span class="radio-chip__box">🎁 Regalo</span>
                 </label>
                 <label class="radio-chip">
-                  <input type="radio" name="aporte" value="Trago" />
+                  <input type="radio" name="aporte" value="Trago" required />
                   <span class="radio-chip__box">🥂 Trago</span>
                 </label>
               </div>
+              <span class="field__err" data-err="aporte"></span>
             </div>
           </div>
 

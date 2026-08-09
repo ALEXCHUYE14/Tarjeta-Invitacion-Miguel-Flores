@@ -11,10 +11,15 @@ const CONFIG = {
   audioVolume: 0.8,
   // 1) Pega aquí la URL /exec de tu Web App de Google Apps Script tras desplegar Code.gs
   scriptURL: "https://script.google.com/macros/s/AKfycby6Bnperufc-KzlinsDBYw-96FvORUUUJRI0qTi5a9TZnNNfJONnptazQiKa1f9VTmbRw/exec",
-  // 2) Ubicación del evento (para el botón y el mapa embebido de Google Maps)
+  // 2) Ubicación del evento
   venueName: "Nuevo Catacaos, Av. Emilio Hermoza Mz. O Lote 1, Piura, Perú",
   venueRef: "Referencia:Esquina Casa De Rejas Blancas",
-  mapsQuery: "Nuevo Catacaos, Av. Emilio Hermoza Mz. O Lote 1, Piura, Perú"
+  // Coordenadas exactas del pin (más precisas que buscar la dirección de texto).
+  // Extraídas de la URL real de Google Maps: 5°15'50.4"S 80°39'50.0"W
+  mapsQuery: "-5.2640061,-80.6638947",
+  // URL completa tal como la entregó Google Maps: se usa tal cual en el botón
+  // "OPEN_GOOGLE_MAPS" para abrir exactamente ese mismo pin en la app/web.
+  mapsPlaceURL: "https://www.google.com/maps/place/5%C2%B015'50.4%22S+80%C2%B039'50.0%22W/@-5.2640061,-80.6664696,17z/data=!3m1!4b1!4m4!3m3!8m2!3d-5.2640061!4d-80.6638947?hl=es&entry=ttu&g_ep=EgoyMDI2MDgwNS4xIKXMDSoASAFQAw%3D%3D"
 };
 
 /* ---------------- DOM ---------------- */
@@ -297,8 +302,11 @@ function startCountdown() {
   if (venueRefEl) venueRefEl.textContent = CONFIG.venueRef || "";
 
   const q = encodeURIComponent(CONFIG.mapsQuery || CONFIG.venueName || "");
-  if (mapsBtn) mapsBtn.href = "https://www.google.com/maps/search/?api=1&query=" + q;
-  // Embed de Google Maps sin necesidad de API key
+  // El botón usa la URL real del pin (tal como la entregó Google Maps) si está
+  // disponible, para abrir exactamente ese lugar; si no, arma una búsqueda.
+  if (mapsBtn) mapsBtn.href = CONFIG.mapsPlaceURL || ("https://www.google.com/maps/search/?api=1&query=" + q);
+  // El mapa embebido sí necesita el formato "output=embed" (sin API key),
+  // y con coordenadas en vez de texto cae justo sobre el pin exacto.
   if (mapFrame && q) mapFrame.src = "https://www.google.com/maps?q=" + q + "&output=embed";
 })();
 
@@ -325,6 +333,79 @@ $$('input[name="asistencia"]').forEach((r) => {
   });
 });
 
+/* =========================================================
+   6.0) DETECCIÓN DE REGISTRO DUPLICADO (mismo nombre, mismo dispositivo)
+   Guarda en localStorage los nombres que ya confirmaron desde este
+   navegador. Si vuelven a enviar el formulario con el mismo nombre,
+   se lanza una notificación — el envío igual se procesa normalmente,
+   solo se avisa. Todo el acceso a localStorage va protegido con
+   try/catch: si el navegador lo bloquea (modo privado, permisos, etc.)
+   la función simplemente no detecta duplicados, pero el formulario
+   sigue funcionando con normalidad.
+   ========================================================= */
+const RSVP_NAMES_KEY = "rsvp_submitted_names_v1";
+
+function normalizeName(name) {
+  return String(name || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function getStoredNames() {
+  try {
+    const raw = localStorage.getItem(RSVP_NAMES_KEY);
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function wasAlreadySubmitted(name) {
+  const norm = normalizeName(name);
+  if (!norm) return false;
+  return getStoredNames().includes(norm);
+}
+
+function rememberSubmittedName(name) {
+  const norm = normalizeName(name);
+  if (!norm) return;
+  try {
+    const names = getStoredNames();
+    if (!names.includes(norm)) {
+      names.push(norm);
+      localStorage.setItem(RSVP_NAMES_KEY, JSON.stringify(names));
+    }
+  } catch (e) {
+    // Si no se puede guardar, no afecta al RSVP que ya se envió con éxito.
+  }
+}
+
+/* =========================================================
+   6.0.1) NOTIFICACIÓN TOAST (independiente del modal de éxito/error)
+   ========================================================= */
+function showToast(message, variant) {
+  const toast = document.createElement("div");
+  toast.className = "toast" + (variant ? ` toast--${variant}` : "");
+  toast.setAttribute("role", "status");
+  toast.setAttribute("aria-live", "polite");
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // Doble rAF: garantiza que el navegador pinte el estado inicial (opacity:0)
+  // antes de agregar la clase que dispara la transición de entrada.
+  requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add("is-visible")));
+
+  let dismissed = false;
+  const dismiss = () => {
+    if (dismissed) return;
+    dismissed = true;
+    clearTimeout(timer);
+    toast.classList.remove("is-visible");
+    setTimeout(() => toast.remove(), 320); // espera la transición de salida antes de quitarlo del DOM
+  };
+  const timer = setTimeout(dismiss, 6500);
+  toast.addEventListener("click", dismiss);
+}
+
 function setFieldError(name, msg) {
   const errEl = $(`.field__err[data-err="${name}"]`);
   const wrap = errEl ? errEl.closest(".field") : null;
@@ -340,6 +421,12 @@ function validate() {
 
   if (!form.asistencia.value) { setFieldError("asistencia", "// ERROR: selecciona una opción"); ok = false; }
   else setFieldError("asistencia", "");
+
+  // "¿Qué llevarás?" es obligatorio solo si va a asistir — si eligió "No podré
+  // ir" el campo queda deshabilitado (ver más abajo) y no aplica exigirlo.
+  const going = form.asistencia.value === "Sí asistiré";
+  if (going && !form.aporte.value) { setFieldError("aporte", "// ERROR: selecciona Regalo o Trago"); ok = false; }
+  else setFieldError("aporte", "");
 
   return ok;
 }
@@ -357,11 +444,18 @@ form.addEventListener("submit", async (e) => {
     aporte: going ? form.aporte.value : "",
     mensaje: form.mensaje.value.trim()
   };
+  const isDuplicate = wasAlreadySubmitted(payload.nombre);
 
   try {
     await sendRSVP(payload);
     setLoading(false);
     showModal("success", payload);
+    // Se guarda el nombre y se notifica solo tras un envío exitoso — así un
+    // intento fallido (error de red) nunca queda marcado como "ya registrado".
+    if (isDuplicate) {
+      showToast(`⚠ [SYSTEM] "${payload.nombre}" ya había confirmado antes desde este dispositivo. Tu nueva respuesta también quedó registrada.`, "warn");
+    }
+    rememberSubmittedName(payload.nombre);
     form.reset();
     aporteInputs.forEach((a) => { a.disabled = false; });
   } catch (err) {

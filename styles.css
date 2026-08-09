@@ -515,6 +515,28 @@ a.log-card__btn:hover { background: rgba(16,185,129,0.14); transform: translateY
 }
 
 /* =========================================================
+   TOAST — notificación independiente (p. ej. registro duplicado)
+   ========================================================= */
+.toast {
+  position: fixed; top: 1rem; left: 50%; z-index: 70; /* por encima del modal y el confetti */
+  max-width: min(440px, calc(100vw - 2rem));
+  padding: .85rem 1.1rem; border-radius: var(--radius-sm);
+  font-family: var(--font-mono); font-size: .82rem; line-height: 1.5;
+  color: var(--text-primary); background: rgba(9, 13, 22, 0.94);
+  border: 1px solid rgba(255, 189, 46, 0.45);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+  cursor: pointer; pointer-events: auto;
+  opacity: 0; transform: translate(-50%, -16px);
+  transition: opacity .3s var(--ease), transform .3s var(--ease);
+}
+.toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+.toast--warn { border-color: rgba(255, 189, 46, 0.55); }
+.toast::after {
+  content: "// clic para cerrar"; display: block; margin-top: .4rem;
+  color: var(--text-muted); font-size: .68rem;
+}
+
+/* =========================================================
    MODAL
    ========================================================= */
 .modal { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 1.2rem; }
