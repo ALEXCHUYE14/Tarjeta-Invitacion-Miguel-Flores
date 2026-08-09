@@ -21,7 +21,7 @@ Stack: HTML5 semántico + CSS moderno (Grid/Flex, glassmorphism) + Vanilla JS ES
 - `Public/fondos/fondo.jpg` — fondo fijo detrás de toda la tarjeta
 
 **2. Backend (RSVP → Google Sheets).**
-- Abre tu hoja `1dB2e2_jFnxvooKZ4nXj4VvNJDOwXrni66Wl2lCl_xEAzu5CF9SIJnFku` → **Extensiones ▸ Apps Script**.
+- Abre tu hoja `1zeD1CQKWda5wf0uPHAzJRXrXvWGXTVCnL1EeKiCfp-I` → **Extensiones ▸ Apps Script**.
 - Pega el contenido de `Code.gs`. (Opcional: ejecuta `setupSheet` una vez para crear encabezados.)
 - **Implementar ▸ Nueva implementación ▸ Aplicación web**: ejecutar como *tú*, acceso *Cualquier usuario*.
 - Copia la URL `/exec`.

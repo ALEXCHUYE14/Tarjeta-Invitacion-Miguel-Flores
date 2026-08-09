@@ -10,11 +10,11 @@ const CONFIG = {
   eventDate: new Date(2026, 7, 14, 21, 30, 0), // mes 7 = Agosto (0-indexed)
   audioVolume: 0.8,
   // 1) Pega aquí la URL /exec de tu Web App de Google Apps Script tras desplegar Code.gs
-  scriptURL: "https://script.google.com/macros/s/AKfycbz9tOakdFJeFxtvm4b5izd1WrT6SS0hZ3JW3KmEnm4diobX1sInSlR1oOIP2jFy44i9Zw/exec",
+  scriptURL: "https://script.google.com/macros/s/AKfycby6Bnperufc-KzlinsDBYw-96FvORUUUJRI0qTi5a9TZnNNfJONnptazQiKa1f9VTmbRw/exec",
   // 2) Ubicación del evento (para el botón y el mapa embebido de Google Maps)
-  venueName: "Av. Emilio Hermoza Mz. O Lote 1, Nuevo Catacaos",
-  venueRef: "Referencia: Mi Niño Dios, Piura, Perú",
-  mapsQuery: "Av. Emilio Hermoza Mz. O Lote 1, Nuevo Catacaos, Piura, Perú"
+  venueName: "Nuevo Catacaos, Av. Emilio Hermoza Mz. O Lote 1, Piura, Perú",
+  venueRef: "Referencia:Esquina Casa De Rejas Blancas",
+  mapsQuery: "Nuevo Catacaos, Av. Emilio Hermoza Mz. O Lote 1, Piura, Perú"
 };
 
 /* ---------------- DOM ---------------- */
@@ -74,13 +74,13 @@ function waitForFirstGesture() {
    1) TERMINAL BOOT SEQUENCE (typewriter)
    ========================================================= */
 const BOOT_LINES = [
-  { t: '<span class="key">[INIT_SYS]</span>: Loading Miguel_Flores_v31.0_Event...', d: 22 },
-  { t: '<span class="key">[AUTH]</span>: Biometric access card ..... <span class="ok">GRANTED</span>', d: 18 },
-  { t: '<span class="key">[MODULE]</span>: mounting /countdown_engine ..... <span class="ok">OK</span>', d: 16 },
-  { t: '<span class="key">[MODULE]</span>: mounting /audio_engine [Pitbull] ..... <span class="ok">OK</span>', d: 16 },
-  { t: '<span class="key">[MODULE]</span>: mounting /rsvp_module ..... <span class="ok">OK</span>', d: 16 },
-  { t: '<span class="key">[BUILD]</span>: compiling Birthday.release(31) ..... <span class="ok">DONE</span>', d: 16 },
-  { t: '<span class="warn">[READY]</span>: awaiting user gesture to execute...', d: 20 }
+  { t: '<span class="key">[INIT_SYS]</span>: Loading Bienvenidos A la fiesta de Miguel Flores', d: 22 },
+  { t: '<span class="key">[AUTH]</span>: Tarjeta de acceso biometrico ..... CONCEDIDO <span class="ok">GRANTED</span>', d: 18 },
+  { t: '<span class="key">[MODULE]</span>: montaje de /countdown_engine ..... <span class="ok">OK</span>', d: 16 },
+  { t: '<span class="key">[MODULE]</span>: montando /audio_engine [Pitbull - Hotel Room Service.mp3] ..... <span class="ok">OK</span>', d: 16 },
+  { t: '<span class="key">[MODULE]</span>: montaje de /rsvp_module ..... <span class="ok">OK</span>', d: 16 },
+  { t: '<span class="key">[BUILD]</span>: compilando Cumpleaños.lanzamiento(31) ..... <span class="ok">DONE</span>', d: 16 },
+  { t: '<span class="warn">[READY]</span>: Esperando gesto del usuario para ejecutar...', d: 20 }
 ];
 
 function typeLine(html, speed) {

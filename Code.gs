@@ -5,7 +5,7 @@
  *
  *  DESPLIEGUE:
  *   1. Abre la hoja de cálculo con ID:
- *      1dB2e2_jFnxvooKZ4nXj4VvNJDOwXrni66Wl2lCl_xEAzu5CF9SIJnFku
+ *      1zeD1CQKWda5wf0uPHAzJRXrXvWGXTVCnL1EeKiCfp-I
  *   2. Extensiones > Apps Script. Pega este código en Code.gs.
  *   3. (Opcional) Ejecuta setupSheet() una vez para crear los encabezados.
  *   4. Implementar > Nueva implementación > Tipo: "Aplicación web".
@@ -15,7 +15,7 @@
  * =========================================================
  */
 
-var SHEET_ID = "1dB2e2_jFnxvooKZ4nXj4VvNJDOwXrni66Wl2lCl_xEAzu5CF9SIJnFku";
+var SHEET_ID = "1zeD1CQKWda5wf0uPHAzJRXrXvWGXTVCnL1EeKiCfp-I";
 var SHEET_NAME = "RSVP"; // nombre de la pestaña donde se guardan las respuestas
 var HEADERS = ["Timestamp", "Nombre", "Asistencia", "Aporte", "Mensaje"];
 
