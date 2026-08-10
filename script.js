@@ -14,12 +14,13 @@ const CONFIG = {
   // 2) Ubicación del evento
   venueName: "Nuevo Catacaos, Av. Emilio Hermoza Mz. O Lote 1, Piura, Perú",
   venueRef: "Referencia:Esquina Casa De Rejas Blancas",
-  // Coordenadas exactas del pin (más precisas que buscar la dirección de texto).
-  // Extraídas de la URL real de Google Maps: 5°15'50.4"S 80°39'50.0"W
-  mapsQuery: "-5.2640061,-80.6638947",
-  // URL completa tal como la entregó Google Maps: se usa tal cual en el botón
-  // "OPEN_GOOGLE_MAPS" para abrir exactamente ese mismo pin en la app/web.
-  mapsPlaceURL: "https://www.google.com/maps/place/5%C2%B015'50.4%22S+80%C2%B039'50.0%22W/@-5.2640061,-80.6664696,17z/data=!3m1!4b1!4m4!3m3!8m2!3d-5.2640061!4d-80.6638947?hl=es&entry=ttu&g_ep=EgoyMDI2MDgwNS4xIKXMDSoASAFQAw%3D%3D"
+  // Coordenadas exactas del lugar (más precisas que buscar la dirección de
+  // texto), extraídas de la URL de Street View que dio Miguel: @-5.2651675,-80.665592
+  mapsQuery: "-5.2651675,-80.665592",
+  // URL completa tal como la entregó Google Maps (vista Street View): se usa
+  // tal cual en el botón "OPEN_GOOGLE_MAPS" para abrir exactamente esa misma
+  // vista al nivel de calle, ideal para reconocer el lugar de un vistazo.
+  mapsPlaceURL: "https://www.google.es/maps/@-5.2651675,-80.665592,3a,75y,222.89h,84.85t/data=!3m7!1e1!3m5!1sYtEtksDQYlORgzY1XHE_GA!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D5.148517252480346%26panoid%3DYtEtksDQYlORgzY1XHE_GA%26yaw%3D222.88804679555574!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI2MDgwNS4xIKXMDSoASAFQAw%3D%3D"
 };
 
 /* ---------------- DOM ---------------- */
